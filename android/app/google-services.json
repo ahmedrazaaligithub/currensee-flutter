@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "498573788944",
+    "project_id": "currensee-cec5b",
+    "storage_bucket": "currensee-cec5b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498573788944:android:6d526647c55ba946364795",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAOw6vzEFk7TYZGW1JMsVnqT_QwK8N49w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
