@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/FAQ.dart';
 import 'package:flutter_application_1/contact.dart';
 import 'package:flutter_application_1/curense.dart';
 import 'package:flutter_application_1/helpnfeedback.dart';
@@ -239,7 +240,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     context,
                     MaterialPageRoute(
                         builder: (builder) =>
-                            contactus())); // Open Contact us page
+                            ContactUs())); // Open Contact us page
               },
             ),
             
