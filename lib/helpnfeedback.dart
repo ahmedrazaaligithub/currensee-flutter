@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_application_1/FAQ.dart';
 import 'package:flutter_application_1/firebase_options.dart';
 
 
@@ -118,56 +119,4 @@ class HelpAndFeedbackPage extends StatelessWidget {
   }
 }
 
-// FAQ Page
-class FAQPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('FAQs'),
-        backgroundColor: Colors.blue,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            FAQItem(question: 'How do I convert currency?', answer: 'To convert currency, select the currency you want to convert from and to, then enter the amount.'),
-            FAQItem(question: 'Is the exchange rate accurate?', answer: 'The exchange rates are updated periodically based on the latest market data.'),
-            FAQItem(question: 'Can I save my favorite currencies?', answer: 'Yes, you can save your frequently used currencies for quicker access.'),
-            FAQItem(question: 'How do I contact support?', answer: 'You can reach out to our support team via the "Contact Us" section in the app.'),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
-// FAQ Item Widget
-class FAQItem extends StatelessWidget {
-  final String question;
-  final String answer;
-
-  FAQItem({required this.question, required this.answer});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ExpansionTile(
-          title: Text(
-            question,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(answer),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

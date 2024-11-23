@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey,
+                  color: Colors.black,
                 ),
               ),
             );
@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         person_data['answer'] ?? "Not Found",
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.black54,
+                          color: Colors.black,
                         ),
                       ),
                     ),

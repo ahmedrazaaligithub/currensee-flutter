@@ -6,16 +6,17 @@ import 'package:flutter_application_1/home.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const contactus());
+  runApp(const ContactUs());
 }
 
-class contactus extends StatelessWidget {
-  const contactus({super.key});
+class ContactUs extends StatelessWidget {
+  const ContactUs({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Contact Us',
+      debugShowCheckedModeBanner: false, // Remove the debug banner
       theme: ThemeData(primaryColor: Colors.blue),
       home: const ContactFormPage(),
     );
@@ -42,14 +43,12 @@ class _ContactFormPageState extends State<ContactFormPage> {
       final String query = _queryController.text;
 
       try {
-       
         await _firestore.collection('contact').add({
           'phoneno': phone,
           'query': query,
           'datetime': DateTime.now().toString(),
         });
 
-       
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -66,7 +65,7 @@ class _ContactFormPageState extends State<ContactFormPage> {
                   },
                   child: const Text(
                     "OK",
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.blue),
                   ),
                 ),
               ],
@@ -77,7 +76,6 @@ class _ContactFormPageState extends State<ContactFormPage> {
         _phoneController.clear();
         _queryController.clear();
       } catch (e) {
-        // Handle errors
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error: ${e.toString()}")),
         );
@@ -89,12 +87,8 @@ class _ContactFormPageState extends State<ContactFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Contact Us',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.black,
-        centerTitle: true,
+        title: const Text('Contact Us'),
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -162,18 +156,11 @@ class _ContactFormPageState extends State<ContactFormPage> {
               Center(
                 child: ElevatedButton(
                   onPressed: _submitForm,
+                  child: const Text("Submit"),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40.0, vertical: 12.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                  child: const Text(
-                    'Submit',
-                    style: TextStyle(fontSize: 18),
+                    elevation: 15,
+                    backgroundColor: const Color.fromARGB(255, 255, 198, 0),
+                    foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
               ),
