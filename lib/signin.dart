@@ -48,46 +48,43 @@ class _MySigninPageState extends State<MySigninPage> {
     try {
       FirebaseAuth auth = FirebaseAuth.instance;
       if (email.text.isEmpty || password.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(
-    content: Text("All fields are required"),
-    backgroundColor: Colors.red, // Set the background color to red
-  ),
-);
-
-      }else{
-      if (auth.currentUser != null) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (builder) => Home()));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("All fields are required"),
+            backgroundColor: Colors.red, // Set the background color to red
+          ),
+        );
       } else {
-        UserCredential user = await auth
-            .signInWithEmailAndPassword(
-                email: email.text, password: password.text)
-            .whenComplete(() {
+        if (auth.currentUser != null) {
           Navigator.push(
-              context, MaterialPageRoute(builder: (builder) => MyApp()));
-        });
-        print('user-> $user');
+              context, MaterialPageRoute(builder: (builder) => Home()));
+        } else {
+          UserCredential user = await auth
+              .signInWithEmailAndPassword(
+                  email: email.text, password: password.text)
+              .whenComplete(() {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (builder) => MyApp()));
+          });
+          print('user-> $user');
+        }
       }
-    } }
-    
-    catch (e) {
+    } catch (e) {
       print('error $e');
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Invalid credentials")));
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      //   title: Text(widget.title),
-      // ),
+        // appBar: AppBar(
+        //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        //   title: Text(widget.title),
+        // ),
 
-    body: SizedBox.expand(
+        body: SizedBox.expand(
       child: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
@@ -183,14 +180,16 @@ class _MySigninPageState extends State<MySigninPage> {
                             color: const Color.fromARGB(255, 8, 65, 235)),
                       ),
                     ),
-                  ),  
-                   Container(
+                  ),
+                  Container(
                     width: 200,
                     height: 45,
                     child: TextButton(
                       onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (builder) => forgetpassword()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (builder) => forgetpassword()));
                       },
                       child: Text(
                         "Forget Password",

@@ -26,7 +26,7 @@ class Home extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-       home: ButtomBar(),
+      home: ButtomBar(),
     );
   }
 }
@@ -40,34 +40,33 @@ class MyHomeScreenPage extends StatefulWidget {
 }
 
 class _MyHomeScreenPageState extends State<MyHomeScreenPage> {
-void logout ()async{
-  try{
-  FirebaseAuth user = FirebaseAuth.instance;
-  user.signOut();
-     Navigator.push(
-            context, MaterialPageRoute(builder: (builder) => Signin()));
-  if(user.currentUser ==null ){
-    
-  }
-  }
-  catch(e){
-    print('error $e');
+  void logout() async {
+    try {
+      FirebaseAuth user = FirebaseAuth.instance;
+      user.signOut();
+      Navigator.push(
+          context, MaterialPageRoute(builder: (builder) => Signin()));
+      if (user.currentUser == null) {}
+    } catch (e) {
+      print('error $e');
+    }
   }
 
-}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      //   title: Text(widget.title),
-      // ),
-      body:Center(
-        child: TextButton(
-                    onPressed:logout,
-                    child: Text("logout",style: TextStyle(color: Colors.yellow.shade400),),),
-              
-      )
-    );
+        // appBar: AppBar(
+        //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        //   title: Text(widget.title),
+        // ),
+        body: Center(
+      child: TextButton(
+        onPressed: logout,
+        child: Text(
+          "logout",
+          style: TextStyle(color: Colors.yellow.shade400),
+        ),
+      ),
+    ));
   }
 }
