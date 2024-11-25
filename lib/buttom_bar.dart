@@ -40,7 +40,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int index = 0;
-
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   // List of pages corresponding to each tab
   List<Widget> mypage = [
     CurrencyConverterUI(), // Replace with your CurrencyConverterUI widget
@@ -186,24 +186,93 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    User? user = _auth.currentUser;
+    
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Image.asset(
-          "logo/logo.png",
-          width: 150,
-        ),
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
+    appBar:   AppBar(
+  backgroundColor: Colors.blue,
+  centerTitle: true,
+  title: Image.asset(
+    "logo/logo.png",
+    width: 150,
+  ),
+  leading: Builder(
+    builder: (BuildContext context) {
+      return user != null
+          ? IconButton(
               icon: const Icon(Icons.menu), // Hamburger menu icon
               onPressed: () {
                 Scaffold.of(context).openDrawer(); // Open the drawer
               },
-            );
-          },
+            )
+          : const SizedBox(); // Show nothing if no user
+    },
+  ),
+  actions: [
+    user != null
+    ? TextButton(
+        onPressed: () {
+          // Show confirmation dialog
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Logout Confirmation"),
+                content: const Text("Are you sure you want to logout?"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      // Close the dialog without logging out
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("Cancel"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Logout logic
+                      _auth.signOut();
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: const Text("Logout"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.white), // Button outline color
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
-      ),
+        child: const Text(
+          "Logout",
+          style: TextStyle(color: Colors.white),
+        ),
+      )
+    : 
+    OutlinedButton(
+        onPressed: () {
+          // Navigate to the login page
+          Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (builder) => Signin())); // Update with your login route
+        },
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.white), // Button outline color
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: const Text(
+          "Login",
+          style: TextStyle(color: Colors.white),
+        ),
+      )
+  ],
+),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -243,7 +312,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             ContactUs())); // Open Contact us page
               },
             ),
-            
             ListTile(
               leading: const Icon(Icons.help_outline),
               title: const Text('Help & Feedback'),
@@ -255,12 +323,14 @@ class _MyHomePageState extends State<MyHomePage> {
                             HelpAndFeedbackPage())); // Open Help & Feedback page
               },
             ),
-            
             ListTile(
               leading: const Icon(Icons.question_answer_outlined),
               title: const Text('Faqs'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (builder) => FAQPage())); // Open Faqs page
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (builder) => FAQPage())); // Open Faqs page
               },
             ),
             ListTile(

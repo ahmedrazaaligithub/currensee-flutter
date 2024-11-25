@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/signin.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -50,36 +51,70 @@ class _CurrencyConverterUIState extends State<CurrencyConverterUI> {
   }
 
   Future<void> convertCurrency() async {
-    setState(() {
-      _isLoading = true;
-    });
+  User? user = _auth.currentUser;
 
-    final url =
-        'https://v6.exchangerate-api.com/v6/87ff51e0b30aae2ad80fa5c4/pair/$_fromCurrency/$_toCurrency';
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final rate = data['conversion_rate'];
-        setState(() {
-          _convertedAmount = _amount * rate;
-        });
-
-        // Save the conversion record to Firestore
-        saveConversionRecord(
-            _fromCurrency, _toCurrency, _amount, _convertedAmount);
-      } else {
-        print("Error: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error: $e");
-    }
-
-    setState(() {
-      _isLoading = false;
-    });
+  if (user == null) {
+    // Show login dialog if user is not logged in
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Login Required'),
+          content: Text(
+              'You need to log in to use the currency converter. Would you like to log in now?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (builder) => Signin()));
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+    return; // Exit the function if the user is not logged in
   }
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  final url =
+      'https://v6.exchangerate-api.com/v6/87ff51e0b30aae2ad80fa5c4/pair/$_fromCurrency/$_toCurrency';
+
+  try {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final rate = data['conversion_rate'];
+      setState(() {
+        _convertedAmount = _amount * rate;
+      });
+
+      // Save the conversion record to Firestore
+      saveConversionRecord(_fromCurrency, _toCurrency, _amount, _convertedAmount);
+    } else {
+      print("Error: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Error: $e");
+  }
+
+  setState(() {
+    _isLoading = false;
+  });
+}
+
 
   Future<void> saveConversionRecord(String fromCurrency, String toCurrency,
       double amount, double convertedAmount) async {
