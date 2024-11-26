@@ -52,7 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
    return Scaffold(
     body:Center(
-      child: Image.asset("logo/logo.png", width: 320,),
+  
+      child: Image.asset("logo/logo.png", width: 200,),
     )
    );
   }

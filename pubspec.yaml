@@ -37,10 +37,12 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^0.13.3
   intl: ^0.18.0
+  fl_chart: ^0.69.2
+  google_sign_in: ^5.4.0
+  flutter_facebook_auth: ^5.0.0
   firebase_core:
   cloud_firestore:
   firebase_auth:
-  fl_chart: ^0.69.2
   
 dev_dependencies:
   flutter_test:

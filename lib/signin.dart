@@ -1,14 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_application_1/forgetpassword.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_application_1/home.dart';
-import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/signup.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -24,9 +24,7 @@ class Signin extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 255, 198, 0)),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
       ),
       home: const MySigninPage(title: 'Signin'),
     );
@@ -44,271 +42,183 @@ class MySigninPage extends StatefulWidget {
 class _MySigninPageState extends State<MySigninPage> {
   TextEditingController password = TextEditingController();
   TextEditingController email = TextEditingController();
+
+  /// Function to sign in with email and password
   void SignIn() async {
     try {
       FirebaseAuth auth = FirebaseAuth.instance;
       if (email.text.isEmpty || password.text.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("All fields are required"),
-            backgroundColor: Colors.red, // Set the background color to red
+            backgroundColor: Colors.red,
           ),
         );
       } else {
-        if (auth.currentUser != null) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (builder) => Home()));
-        } else {
-          UserCredential user = await auth
-              .signInWithEmailAndPassword(
-                  email: email.text, password: password.text)
-              .whenComplete(() {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (builder) => MyApp()));
-          });
-          print('user-> $user');
-        }
+        UserCredential user = await auth.signInWithEmailAndPassword(
+          email: email.text,
+          password: password.text,
+        );
+        print('user-> $user');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (builder) => const Home()),
+        );
       }
     } catch (e) {
       print('error $e');
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Invalid credentials")));
+          .showSnackBar(const SnackBar(content: Text("Invalid credentials")));
+    }
+  }
+
+  /// Function to sign in with Google
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return; // User canceled login
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      print("Google User: ${userCredential.user}");
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (builder) => const Home()),
+      );
+    } catch (e) {
+      print("Error with Google Sign-In: $e");
+    }
+  }
+
+  /// Function to sign in with Facebook
+  Future<void> signInWithFacebook() async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+      if (result.status == LoginStatus.success) {
+        final OAuthCredential credential =
+            FacebookAuthProvider.credential(result.accessToken!.token);
+
+        final UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+        print("Facebook User: ${userCredential.user}");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (builder) => const Home()),
+        );
+      } else {
+        print("Facebook Login Failed: ${result.status}");
+      }
+    } catch (e) {
+      print("Error with Facebook Sign-In: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        //   title: Text(widget.title),
-        // ),
-
-        body: SizedBox.expand(
-      child: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-          Color.fromARGB(255, 255, 255, 255),
-          Color.fromARGB(255, 255, 255, 255),
-          Color.fromARGB(255, 255, 255, 255),
-        ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
-        child: Center(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
             child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child: Image(
-                      image: AssetImage('logo/logo.png'),
-                      width: 250,
-                      // height: 200,
-                    ),
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Login',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 290),
-                    child: TextField(
-                      controller: email,
-                      keyboardType: TextInputType.name,
-                      decoration: InputDecoration(
-                        // label: Text(' Email'),
-                        hintText: " Enter Your Email",
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.person),
-                      ),
+                ),
+                const SizedBox(height: 40),
+                TextField(
+                  controller: email,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 15),
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 290),
-                    child: TextField(
-                      controller: password,
-                      keyboardType: TextInputType.visiblePassword,
-                      decoration: InputDecoration(
-                        hintText: " Enter Your Password",
-                        // label: Text(' Password'),
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock),
-                      ),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: password,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 15),
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 200,
-                    height: 45,
-                    child: ElevatedButton(
-                      onPressed: SignIn,
-                      child: Text("LOGIN"),
-                      style: ElevatedButton.styleFrom(
-                        elevation: 15,
-                        backgroundColor: Color.fromARGB(255, 255, 198, 0),
-                        foregroundColor:
-                            const Color.fromARGB(255, 255, 255, 255),
-                      ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: SignIn,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  child: const Text('Login'),
+                ),
+                const SizedBox(height: 20),
+                const Text("Or login with"),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: signInWithGoogle,
+                      icon: const Icon(Icons.g_mobiledata,
+                          size: 40, color: Colors.red),
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 200,
-                    height: 45,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (builder) => Signup()));
-                      },
-                      child: Text(
-                        "SIGNUP",
-                        style: TextStyle(
-                            color: const Color.fromARGB(255, 8, 65, 235)),
-                      ),
+                    IconButton(
+                      onPressed: signInWithFacebook,
+                      icon: const Icon(Icons.facebook,
+                          size: 40, color: Colors.blue),
                     ),
-                  ),
-                  Container(
-                    width: 200,
-                    height: 45,
-                    child: TextButton(
-                      onPressed: () {
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don’t have an account? "),
+                    GestureDetector(
+                      onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (builder) => forgetpassword()));
+                          context,
+                          MaterialPageRoute(
+                              builder: (builder) => const Signup()),
+                        );
                       },
-                      child: Text(
-                        "Forget Password",
+                      child: const Text(
+                        "Sign up",
                         style: TextStyle(
-                            color: const Color.fromARGB(255, 8, 65, 235)),
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Container(
-                    child: Image.asset(
-                  "logo/google.png",
-                  height: 50,
-                  width: 50,
-                )),
-                Container(
-                    child: Image.asset(
-                  "logo/facebook.png",
-                  height: 50,
-                  width: 50,
-                )),
-                Container(
-                    child: Image.asset(
-                  "logo/github.png",
-                  height: 50,
-                  width: 50,
-                )),
-              ]),
-            ])),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-    ));
+    );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//       body: Center(
-//         child: Center(
-//           child: Column(
-//             children: [
-//               Container(
-//                 child: Image(
-//                   image: AssetImage('logo/logo.png'),
-//                   width: 200,
-//                 ),
-//               ),
-//               Container(
-//                 margin: EdgeInsets.all(10),
-//                 child: TextField(
-//                   controller: email,
-//                   decoration: InputDecoration(
-//                     hintText: 'your email',
-//                     label: Text('your Email'),
-//                     // border: OutlineInputBorder(
-//                     //   borderRadius: BorderRadius.circular(
-//                     //       10), // Adjust this value as needed
-//                     // ),
-//                   ),
-//                 ),
-//               ),
-//               Container(
-//                 margin: EdgeInsets.all(10),
-//                 child: TextField(
-//                   controller: password,
-//                   decoration: InputDecoration(
-//                     hintText: 'your password',
-//                     label: Text('your Password'),
-//                     // border: OutlineInputBorder(
-//                     //   borderRadius: BorderRadius.circular(
-//                     //       10),
-//                     // ),
-//                   ),
-//                 ),
-//               ),
-//               Container(
-//                   child: ElevatedButton(
-//                       onPressed: SignIn,
-//                       child: Text("SUBMIT"),
-//                       style: ElevatedButton.styleFrom(
-//                         elevation: 15,
-//                         backgroundColor: Color.fromARGB(255, 255, 198, 0),
-//                         foregroundColor:
-//                             const Color.fromARGB(255, 255, 255, 255),
-//                       ))),
-//               Container(
-//                 child: TextButton(
-//                     onPressed: () {
-//                       Navigator.push(context,
-//                           MaterialPageRoute(builder: (builder) => Signup()));
-//                     },
-//                     child: Text("need register",style: TextStyle(color: Colors.yellow.shade400),),),
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
