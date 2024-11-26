@@ -7,9 +7,6 @@ import 'package:flutter_application_1/curense.dart';
 import 'package:flutter_application_1/helpnfeedback.dart';
 import 'package:flutter_application_1/history.dart';
 import 'package:flutter_application_1/signin.dart';
-import 'package:flutter_application_1/news.dart';
-
-
 
 void main() {
   runApp(const ButtomBar());
@@ -47,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // List of pages corresponding to each tab
   List<Widget> mypage = [
     CurrencyConverterUI(), // Replace with your CurrencyConverterUI widget
-    CurrencyMarketPage(),
+    Text("Home Page"),
     Text("Your Library Page"),
     Text("Profile Page"),
   ];
@@ -192,7 +189,8 @@ class _MyHomePageState extends State<MyHomePage> {
     User? user = _auth.currentUser;
     
     return Scaffold(
-    appBar:   AppBar(
+    appBar:   
+    AppBar(
   backgroundColor: Colors.blue,
   centerTitle: true,
   title: Image.asset(
@@ -212,10 +210,59 @@ class _MyHomePageState extends State<MyHomePage> {
     },
   ),
   actions: [
-    user != null
-    ? TextButton(
-        onPressed: () {
-          // Show confirmation dialog
+    PopupMenuButton(
+      icon: const Icon(Icons.more_vert, color: Colors.white), // 3-dots icon
+      offset: const Offset(0, 40), // Popup appears below the icon
+      color: Colors.white, // Popup background color
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8), // Rounded corners
+      ),
+      itemBuilder: (BuildContext context) {
+        return user != null
+            ? [
+                PopupMenuItem(
+                  value: 'logout',
+                  child: Row(
+                    children: const [
+                      Icon(Icons.logout, color: Colors.black),
+                      SizedBox(width: 8),
+                      Text(
+                        'Logout',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600, // Bold text
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ]
+            : [
+                PopupMenuItem(
+                  value: 'login',
+                  child: Row(
+                    children: const [
+                      Icon(Icons.login, color: Colors.black),
+                      SizedBox(width: 8),
+                      Text(
+                        'Login',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600, // Bold text
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ];
+      },
+      onSelected: (value) {
+        if (value == 'login') {
+          // Navigate to the login page
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Signin()));
+        } else if (value == 'logout') {
+          // Show logout confirmation dialog
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -225,8 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: [
                   TextButton(
                     onPressed: () {
-                      // Close the dialog without logging out
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(); // Close the dialog
                     },
                     child: const Text("Cancel"),
                   ),
@@ -234,7 +280,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       // Logout logic
                       _auth.signOut();
-                      Navigator.of(context).pop(); // Close the dialog
+                      Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Signin())); // Close the dialog
                     },
                     child: const Text("Logout"),
                   ),
@@ -242,41 +289,12 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           );
-        },
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Colors.white), // Button outline color
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: const Text(
-          "Logout",
-          style: TextStyle(color: Colors.white),
-        ),
-      )
-    : 
-    OutlinedButton(
-        onPressed: () {
-          // Navigate to the login page
-          Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (builder) => Signin())); // Update with your login route
-        },
-        style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Colors.white), // Button outline color
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: const Text(
-          "Login",
-          style: TextStyle(color: Colors.white),
-        ),
-      )
+        }
+      },
+    ),
   ],
 ),
-      drawer: Drawer(
+drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -387,7 +405,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.newspaper), label: "News"),
+              icon: Icon(Icons.search_rounded), label: "Search"),
           BottomNavigationBarItem(
               icon: Icon(Icons.library_books), label: "Library"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
