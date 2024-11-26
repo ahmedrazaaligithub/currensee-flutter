@@ -171,7 +171,9 @@ class _CurrencyConverterUIState extends State<CurrencyConverterUI> {
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
+                
               ),
+              color: Colors.white,
               elevation: 4,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -276,9 +278,17 @@ class _CurrencyConverterUIState extends State<CurrencyConverterUI> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: convertCurrency,
-              child: Text("Convert Currency"),
-            ),
+  onPressed: convertCurrency,
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.blue, // Set the background color to blue
+    foregroundColor: Colors.white, // Set the text color to white
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24), // Optional padding
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8), // Optional rounded corners
+    ),
+  ),
+  child: const Text("Convert Currency"),
+),
           ],
         ),
       ),
