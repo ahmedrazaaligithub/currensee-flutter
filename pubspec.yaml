@@ -40,6 +40,8 @@ dependencies:
   firebase_core:
   cloud_firestore:
   firebase_auth:
+  fl_chart: ^0.69.2
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
