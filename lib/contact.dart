@@ -88,7 +88,7 @@ class _ContactFormPageState extends State<ContactFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Contact Us'),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.blue, 
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -7,6 +7,9 @@ import 'package:flutter_application_1/curense.dart';
 import 'package:flutter_application_1/helpnfeedback.dart';
 import 'package:flutter_application_1/history.dart';
 import 'package:flutter_application_1/signin.dart';
+import 'package:flutter_application_1/news.dart';
+
+
 
 void main() {
   runApp(const ButtomBar());
@@ -44,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // List of pages corresponding to each tab
   List<Widget> mypage = [
     CurrencyConverterUI(), // Replace with your CurrencyConverterUI widget
-    Text("Home Page"),
+    CurrencyMarketPage(),
     Text("Your Library Page"),
     Text("Profile Page"),
   ];
@@ -384,7 +387,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.search_rounded), label: "Search"),
+              icon: Icon(Icons.newspaper), label: "News"),
           BottomNavigationBarItem(
               icon: Icon(Icons.library_books), label: "Library"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
