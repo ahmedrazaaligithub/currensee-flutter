@@ -154,14 +154,14 @@ class _ContactFormPageState extends State<ContactFormPage> {
               ),
               const SizedBox(height: 24.0),
               Center(
-                child: ElevatedButton(
+                child:  ElevatedButton(
                   onPressed: _submitForm,
-                  child: const Text("Submit"),
                   style: ElevatedButton.styleFrom(
-                    elevation: 15,
-                    backgroundColor: const Color.fromARGB(255, 255, 198, 0),
-                    foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
                   ),
+                  child: const Text('Submit'),
                 ),
               ),
             ],

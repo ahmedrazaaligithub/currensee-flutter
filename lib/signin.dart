@@ -40,21 +40,15 @@ class MySigninPage extends StatefulWidget {
 }
 
 class _MySigninPageState extends State<MySigninPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController password = TextEditingController();
   TextEditingController email = TextEditingController();
 
   /// Function to sign in with email and password
   void SignIn() async {
-    try {
-      FirebaseAuth auth = FirebaseAuth.instance;
-      if (email.text.isEmpty || password.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("All fields are required"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else {
+    if (_formKey.currentState!.validate()) {
+      try {
+        FirebaseAuth auth = FirebaseAuth.instance;
         UserCredential user = await auth.signInWithEmailAndPassword(
           email: email.text,
           password: password.text,
@@ -64,18 +58,21 @@ class _MySigninPageState extends State<MySigninPage> {
           context,
           MaterialPageRoute(builder: (builder) => const Home()),
         );
+      } catch (e) {
+        print('error $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Invalid credentials")),
+        );
       }
-    } catch (e) {
-      print('error $e');
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Invalid credentials")));
     }
   }
 
   /// Function to sign in with Google
   Future<void> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+        clientId: "498573788944-fo1qpltc1kp3ka8iugj5a98q09vbdvqj.apps.googleusercontent.com"
+      ).signIn();
       if (googleUser == null) return; // User canceled login
 
       final GoogleSignInAuthentication googleAuth =
@@ -128,93 +125,115 @@ class _MySigninPageState extends State<MySigninPage> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                TextField(
-                  controller: email,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 15),
                   ),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: password,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                  const SizedBox(height: 40),
+                  TextFormField(
+                    controller: email,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 15),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email is required';
+                      } else if (!RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]+")
+                          .hasMatch(value)) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: SignIn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 50),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: password,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 15),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password is required';
+                      } else if (value.length < 6) {
+                        return 'Password must be at least 6 characters';
+                      }
+                      return null;
+                    },
                   ),
-                  child: const Text('Login'),
-                ),
-                const SizedBox(height: 20),
-                const Text("Or login with"),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: signInWithGoogle,
-                      icon: const Icon(Icons.g_mobiledata,
-                          size: 40, color: Colors.red),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: SignIn,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 50),
                     ),
-                    IconButton(
-                      onPressed: signInWithFacebook,
-                      icon: const Icon(Icons.facebook,
-                          size: 40, color: Colors.blue),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don’t have an account? "),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (builder) => const Signup()),
-                        );
-                      },
-                      child: const Text(
-                        "Sign up",
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
+                    child: const Text('Login'),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text("Or login with"),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: signInWithGoogle,
+                        icon: const Icon(Icons.g_mobiledata,
+                            size: 40, color: Colors.red),
+                      ),
+                      IconButton(
+                        onPressed: signInWithFacebook,
+                        icon: const Icon(Icons.facebook,
+                            size: 40, color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Don’t have an account? "),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (builder) => const Signup()),
+                          );
+                        },
+                        child: const Text(
+                          "Sign up",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

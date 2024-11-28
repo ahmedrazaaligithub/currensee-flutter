@@ -6,6 +6,7 @@ import 'package:flutter_application_1/contact.dart';
 import 'package:flutter_application_1/curense.dart';
 import 'package:flutter_application_1/helpnfeedback.dart';
 import 'package:flutter_application_1/history.dart';
+import 'package:flutter_application_1/news.dart';
 import 'package:flutter_application_1/signin.dart';
 
 void main() {
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // List of pages corresponding to each tab
   List<Widget> mypage = [
     CurrencyConverterUI(), // Replace with your CurrencyConverterUI widget
-    Text("Home Page"),
+    CurrencyMarketPage(),
     Text("Your Library Page"),
     Text("Profile Page"),
   ];
@@ -187,7 +188,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     User? user = _auth.currentUser;
-    
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String displayName = auth.currentUser?.displayName ?? "Guest";
     return Scaffold(
     appBar:   
     AppBar(
@@ -305,8 +307,7 @@ drawer: Drawer(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'User Name',
+                   Text(displayName,
                     style: TextStyle(color: Colors.white, fontSize: 24),
                   ),
                 ],
@@ -405,7 +406,7 @@ drawer: Drawer(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.search_rounded), label: "Search"),
+              icon: Icon(Icons.newspaper), label: "News"),
           BottomNavigationBarItem(
               icon: Icon(Icons.library_books), label: "Library"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
@@ -418,158 +419,3 @@ drawer: Drawer(
 
 
 
-
-//-------------------------------------- custom currency -------------------------------------
-
-
-
-
-
-// double? userDefinedRate; // Global variable to store user-defined rate
-
-// class MyHomePage extends StatefulWidget {
-//   // ... your existing code ...
-// }
-
-// class _MyHomePageState extends State<MyHomePage> {
-//   // ... your existing code ...
-
-//   void _showOwnRatePopup(BuildContext context) {
-//     TextEditingController rateController = TextEditingController();
-
-//     showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return StatefulBuilder(
-//           builder: (context, setState) {
-//             return AlertDialog(
-//               shape: RoundedRectangleBorder(
-//                 borderRadius: BorderRadius.circular(20),
-//               ),
-//               title: Text('Own Rate'),
-//               content: Column(
-//                 mainAxisSize: MainAxisSize.min,
-//                 children: [
-//                   Text(
-//                     "Current Selected:",
-//                     style: TextStyle(fontWeight: FontWeight.bold),
-//                   ),
-//                   SizedBox(height: 8),
-//                   Text(
-//                     "1 $_fromCurrency = ${userDefinedRate ?? 'X'} $_toCurrency",
-//                     style: TextStyle(fontSize: 16),
-//                   ),
-//                   SizedBox(height: 16),
-//                   TextField(
-//                     controller: rateController,
-//                     keyboardType: TextInputType.number,
-//                     decoration: InputDecoration(
-//                       hintText: "Enter your own rate",
-//                       border: OutlineInputBorder(
-//                         borderRadius: BorderRadius.circular(8),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               actions: [
-//                 TextButton(
-//                   onPressed: () {
-//                     setState(() {
-//                       userDefinedRate = null; // Reset rate
-//                     });
-//                     Navigator.pop(context);
-//                   },
-//                   child: Text('Reset'),
-//                 ),
-//                 TextButton(
-//                   onPressed: () {
-//                     if (rateController.text.isNotEmpty) {
-//                       setState(() {
-//                         userDefinedRate = double.tryParse(rateController.text);
-//                       });
-//                     }
-//                     Navigator.pop(context);
-//                   },
-//                   child: Text('Set'),
-//                 ),
-//                 TextButton(
-//                   onPressed: () {
-//                     Navigator.pop(context); // Close popup
-//                   },
-//                   child: Text('Cancel'),
-//                 ),
-//               ],
-//             );
-//           },
-//         );
-//       },
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         // ... existing code ...
-//       ),
-//       drawer: Drawer(
-//         child: ListView(
-//           padding: EdgeInsets.zero,
-//           children: [
-//             // ... existing ListTile items ...
-//             ListTile(
-//               leading: Icon(Icons.drive_file_rename_outline_outlined),
-//               title: Text('Own Rate'),
-//               onTap: () {
-//                 Navigator.pop(context); // Close drawer
-//                 _showOwnRatePopup(context); // Show Own Rate popup
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//       // ... existing Scaffold code ...
-//     );
-//   }
-// }
-
-//--------------------------notification-----------------------------
-
-// Future<void> convertCurrency() async {
-//   setState(() {
-//     _isLoading = true;
-//   });
-
-//   if (userDefinedRate != null) {
-//     // Use user-defined rate
-//     setState(() {
-//       _convertedAmount = _amount * userDefinedRate!;
-//       _isLoading = false;
-//     });
-//     return;
-//   }
-
-  // Fetch live rate if user-defined rate is not set
-//   final url =
-//       'https://v6.exchangerate-api.com/v6/87ff51e0b30aae2ad80fa5c4/pair/$_fromCurrency/$_toCurrency&#39;;
-
-//   try {
-//     final response = await http.get(Uri.parse(url));
-//     if (response.statusCode == 200) {
-//       final data = jsonDecode(response.body);
-//       final rate = data['conversion_rate'];
-//       setState(() {
-//         _convertedAmount = _amount * rate;
-//       });
-//     } else {
-//       print("Error: ${response.statusCode}");
-//     }
-//   } catch (e) {
-//     print("Error: $e");
-//   }
-
-//   setState(() {
-//     _isLoading = false;
-//   });
-// }
